@@ -14,8 +14,8 @@ const bodySchema = z.object({
     name: z.string(),
     rowCount: z.number(),
     columns: z.array(z.object({ name: z.string(), type: z.string() })),
-    stats: z.array(z.record(z.union([z.string(), z.number()]))).optional().default([]),
-    sample: z.array(z.record(z.unknown())).optional().default([]),
+    stats: z.array(z.record(z.string(), z.union([z.string(), z.number()]))).optional().default([]),
+    sample: z.array(z.record(z.string(), z.unknown())).optional().default([]),
   }),
 });
 

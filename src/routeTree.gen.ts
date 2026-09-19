@@ -10,16 +10,30 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnalysisRouteImport } from './routes/analysis'
+import { Route as AnalyzeRouteImport } from './routes/analyze'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as WriteRouteImport } from './routes/write'
 import { Route as ApiAnalyzeRouteImport } from './routes/api/analyze'
 import { Route as ApiAssistRouteImport } from './routes/api/assist'
+import { Route as ApiDataInsightRouteImport } from './routes/api/data-insight'
 import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-image'
+import { Route as ApiScrapeTableRouteImport } from './routes/api/scrape-table'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalysisRoute = AnalysisRouteImport.update({
+  id: '/analysis',
+  path: '/analysis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyzeRoute = AnalyzeRouteImport.update({
+  id: '/analyze',
+  path: '/analyze',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -42,9 +56,19 @@ const ApiAssistRoute = ApiAssistRouteImport.update({
   path: '/api/assist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDataInsightRoute = ApiDataInsightRouteImport.update({
+  id: '/api/data-insight',
+  path: '/api/data-insight',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiGenerateImageRoute = ApiGenerateImageRouteImport.update({
   id: '/api/generate-image',
   path: '/api/generate-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiScrapeTableRoute = ApiScrapeTableRouteImport.update({
+  id: '/api/scrape-table',
+  path: '/api/scrape-table',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
@@ -55,69 +79,97 @@ const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analysis': typeof AnalysisRoute
+  '/analyze': typeof AnalyzeRoute
   '/search': typeof SearchRoute
   '/write': typeof WriteRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/api/assist': typeof ApiAssistRoute
+  '/api/data-insight': typeof ApiDataInsightRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/scrape-table': typeof ApiScrapeTableRoute
   '/api/transcribe': typeof ApiTranscribeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analysis': typeof AnalysisRoute
+  '/analyze': typeof AnalyzeRoute
   '/search': typeof SearchRoute
   '/write': typeof WriteRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/api/assist': typeof ApiAssistRoute
+  '/api/data-insight': typeof ApiDataInsightRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/scrape-table': typeof ApiScrapeTableRoute
   '/api/transcribe': typeof ApiTranscribeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analysis': typeof AnalysisRoute
+  '/analyze': typeof AnalyzeRoute
   '/search': typeof SearchRoute
   '/write': typeof WriteRoute
   '/api/analyze': typeof ApiAnalyzeRoute
   '/api/assist': typeof ApiAssistRoute
+  '/api/data-insight': typeof ApiDataInsightRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/scrape-table': typeof ApiScrapeTableRoute
   '/api/transcribe': typeof ApiTranscribeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/analysis'
+    | '/analyze'
     | '/search'
     | '/write'
     | '/api/analyze'
     | '/api/assist'
+    | '/api/data-insight'
     | '/api/generate-image'
+    | '/api/scrape-table'
     | '/api/transcribe'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/analysis'
+    | '/analyze'
     | '/search'
     | '/write'
     | '/api/analyze'
     | '/api/assist'
+    | '/api/data-insight'
     | '/api/generate-image'
+    | '/api/scrape-table'
     | '/api/transcribe'
   id:
     | '__root__'
     | '/'
+    | '/analysis'
+    | '/analyze'
     | '/search'
     | '/write'
     | '/api/analyze'
     | '/api/assist'
+    | '/api/data-insight'
     | '/api/generate-image'
+    | '/api/scrape-table'
     | '/api/transcribe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalysisRoute: typeof AnalysisRoute
+  AnalyzeRoute: typeof AnalyzeRoute
   SearchRoute: typeof SearchRoute
   WriteRoute: typeof WriteRoute
   ApiAnalyzeRoute: typeof ApiAnalyzeRoute
   ApiAssistRoute: typeof ApiAssistRoute
+  ApiDataInsightRoute: typeof ApiDataInsightRoute
   ApiGenerateImageRoute: typeof ApiGenerateImageRoute
+  ApiScrapeTableRoute: typeof ApiScrapeTableRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
 }
 
@@ -128,6 +180,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analysis': {
+      id: '/analysis'
+      path: '/analysis'
+      fullPath: '/analysis'
+      preLoaderRoute: typeof AnalysisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analyze': {
+      id: '/analyze'
+      path: '/analyze'
+      fullPath: '/analyze'
+      preLoaderRoute: typeof AnalyzeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -158,11 +224,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAssistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/data-insight': {
+      id: '/api/data-insight'
+      path: '/api/data-insight'
+      fullPath: '/api/data-insight'
+      preLoaderRoute: typeof ApiDataInsightRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/generate-image': {
       id: '/api/generate-image'
       path: '/api/generate-image'
       fullPath: '/api/generate-image'
       preLoaderRoute: typeof ApiGenerateImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/scrape-table': {
+      id: '/api/scrape-table'
+      path: '/api/scrape-table'
+      fullPath: '/api/scrape-table'
+      preLoaderRoute: typeof ApiScrapeTableRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/transcribe': {
@@ -177,11 +257,15 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalysisRoute: AnalysisRoute,
+  AnalyzeRoute: AnalyzeRoute,
   SearchRoute: SearchRoute,
   WriteRoute: WriteRoute,
   ApiAnalyzeRoute: ApiAnalyzeRoute,
   ApiAssistRoute: ApiAssistRoute,
+  ApiDataInsightRoute: ApiDataInsightRoute,
   ApiGenerateImageRoute: ApiGenerateImageRoute,
+  ApiScrapeTableRoute: ApiScrapeTableRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Archive,
+  BarChart3,
+  Database,
   Bot,
   BookMarked,
   BookOpenText,
@@ -147,11 +149,11 @@ const hubActions: Array<{
   helper: string;
   icon: typeof FileSearch;
   position: string;
-  to?: "/search" | "/write";
+  to?: "/search" | "/write" | "/analyze" | "/analysis";
   withQuery?: boolean;
 }> = [
   { label: "Find papers", helper: "Search literature", icon: FileSearch, position: "hub-action-top", to: "/search", withQuery: true },
-  { label: "Map concepts", helper: "Connect findings", icon: Network, position: "hub-action-right" },
+  { label: "Map concepts", helper: "Connect findings", icon: Network, position: "hub-action-right", to: "/analyze" },
   { label: "Cite sources", helper: "Build references", icon: Quote, position: "hub-action-bottom", to: "/write" },
   { label: "Analyze PDF", helper: "Ask documents", icon: BookOpenText, position: "hub-action-left" },
 ];
@@ -313,6 +315,8 @@ function ResearchWorkspace() {
               <NavItem icon={Search} label="Search & discovery" open={sidebarOpen} to="/search" />
               <NavItem icon={PenLine} label="Writing workspace" open={sidebarOpen} to="/write" />
               <NavItem icon={Library} label="Source library" open={sidebarOpen} to="/write" />
+              <NavItem icon={BarChart3} label="Data analysis" open={sidebarOpen} to="/analyze" />
+              <NavItem icon={Database} label="Data & Coding" open={sidebarOpen} to="/analysis" />
 
             </NavGroup>
 
@@ -551,9 +555,9 @@ function ResearchWorkspace() {
                 const inner = (
                   <>
                     <span className="grid size-9 shrink-0 place-items-center rounded-full bg-secondary text-secondary-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><Icon className="size-4" /></span>
-                    <span className="block min-w-0">
-                      <span className="block truncate text-[11px] font-semibold sm:text-xs">{action.label}</span>
-                      <span className="block truncate text-[10px] text-muted-foreground">{action.helper}</span>
+                    <span className="hub-action-copy block min-w-0">
+                      <span className="hub-action-label block truncate whitespace-nowrap text-[11px] font-semibold sm:text-xs">{action.label}</span>
+                      <span className="hub-action-helper block truncate text-[10px] text-muted-foreground">{action.helper}</span>
                     </span>
                   </>
                 );
@@ -571,6 +575,13 @@ function ResearchWorkspace() {
                     </Link>
                   );
                 }
+                if (action.to === "/analyze") {
+                  return (
+                    <Link key={action.label} to="/analyze" className={cls}>
+                      {inner}
+                    </Link>
+                  );
+                }
                 return (
                   <button key={action.label} type="button" className={cls}>
                     {inner}
@@ -579,7 +590,7 @@ function ResearchWorkspace() {
 
               })}
 
-              <form className="hub-core relative z-10 flex aspect-square w-[64%] max-w-[23rem] flex-col items-center justify-center rounded-full border border-primary/25 bg-card p-[8%] text-center shadow-2xl sm:w-[58%] sm:p-[9%]" onSubmit={(event) => {
+              <form className="hub-core relative z-10 flex aspect-square w-[64%] max-w-[25rem] flex-col items-center justify-center rounded-full border border-primary/25 bg-card p-[8%] text-center shadow-2xl sm:w-[60%] sm:p-[8%]" onSubmit={(event) => {
                   event.preventDefault();
                   const prompt = query.trim();
                   if (!prompt) return;
@@ -685,7 +696,7 @@ function NavGroup({ title, open, children }: { title: string; open: boolean; chi
   return <div>{open && <p className="mb-2 px-3 text-[10px] font-semibold uppercase text-muted-foreground">{title}</p>}<div className="space-y-1">{children}</div></div>;
 }
 
-function NavItem({ icon: Icon, label, open, active = false, to }: { icon: typeof History; label: string; open: boolean; active?: boolean; to?: "/search" | "/write" }) {
+function NavItem({ icon: Icon, label, open, active = false, to }: { icon: typeof History; label: string; open: boolean; active?: boolean; to?: "/search" | "/write" | "/analyze" | "/analysis" }) {
   const className = cn("flex h-10 w-full items-center rounded-full text-sm transition-colors", open ? "gap-3 px-3" : "justify-center", active ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground" : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground");
   const inner = (
     <>

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalysisRouteImport } from './routes/analysis'
 import { Route as AnalyzeRouteImport } from './routes/analyze'
+import { Route as ConverterRouteImport } from './routes/converter'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as WriteRouteImport } from './routes/write'
 import { Route as ApiAnalyzeRouteImport } from './routes/api/analyze'
@@ -34,6 +35,11 @@ const AnalysisRoute = AnalysisRouteImport.update({
 const AnalyzeRoute = AnalyzeRouteImport.update({
   id: '/analyze',
   path: '/analyze',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConverterRoute = ConverterRouteImport.update({
+  id: '/converter',
+  path: '/converter',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analysis': typeof AnalysisRoute
   '/analyze': typeof AnalyzeRoute
+  '/converter': typeof ConverterRoute
   '/search': typeof SearchRoute
   '/write': typeof WriteRoute
   '/api/analyze': typeof ApiAnalyzeRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analysis': typeof AnalysisRoute
   '/analyze': typeof AnalyzeRoute
+  '/converter': typeof ConverterRoute
   '/search': typeof SearchRoute
   '/write': typeof WriteRoute
   '/api/analyze': typeof ApiAnalyzeRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analysis': typeof AnalysisRoute
   '/analyze': typeof AnalyzeRoute
+  '/converter': typeof ConverterRoute
   '/search': typeof SearchRoute
   '/write': typeof WriteRoute
   '/api/analyze': typeof ApiAnalyzeRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analysis'
     | '/analyze'
+    | '/converter'
     | '/search'
     | '/write'
     | '/api/analyze'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analysis'
     | '/analyze'
+    | '/converter'
     | '/search'
     | '/write'
     | '/api/analyze'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analysis'
     | '/analyze'
+    | '/converter'
     | '/search'
     | '/write'
     | '/api/analyze'
@@ -163,6 +175,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalysisRoute: typeof AnalysisRoute
   AnalyzeRoute: typeof AnalyzeRoute
+  ConverterRoute: typeof ConverterRoute
   SearchRoute: typeof SearchRoute
   WriteRoute: typeof WriteRoute
   ApiAnalyzeRoute: typeof ApiAnalyzeRoute
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/analyze'
       fullPath: '/analyze'
       preLoaderRoute: typeof AnalyzeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/converter': {
+      id: '/converter'
+      path: '/converter'
+      fullPath: '/converter'
+      preLoaderRoute: typeof ConverterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -259,6 +279,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalysisRoute: AnalysisRoute,
   AnalyzeRoute: AnalyzeRoute,
+  ConverterRoute: ConverterRoute,
   SearchRoute: SearchRoute,
   WriteRoute: WriteRoute,
   ApiAnalyzeRoute: ApiAnalyzeRoute,

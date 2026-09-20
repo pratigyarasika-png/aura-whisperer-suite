@@ -3,6 +3,7 @@ import {
   Archive,
   BarChart3,
   Database,
+  Repeat2,
   Bot,
   BookMarked,
   BookOpenText,
@@ -149,7 +150,7 @@ const hubActions: Array<{
   helper: string;
   icon: typeof FileSearch;
   position: string;
-  to?: "/search" | "/write" | "/analyze" | "/analysis";
+  to?: "/search" | "/write" | "/analyze" | "/analysis" | "/converter";
   withQuery?: boolean;
 }> = [
   { label: "Find papers", helper: "Search literature", icon: FileSearch, position: "hub-action-top", to: "/search", withQuery: true },
@@ -317,6 +318,7 @@ function ResearchWorkspace() {
               <NavItem icon={Library} label="Source library" open={sidebarOpen} to="/write" />
               <NavItem icon={BarChart3} label="Data analysis" open={sidebarOpen} to="/analyze" />
               <NavItem icon={Database} label="Data & Coding" open={sidebarOpen} to="/analysis" />
+              <NavItem icon={Repeat2} label="Converter Hub" open={sidebarOpen} to="/converter" />
 
             </NavGroup>
 
@@ -696,7 +698,7 @@ function NavGroup({ title, open, children }: { title: string; open: boolean; chi
   return <div>{open && <p className="mb-2 px-3 text-[10px] font-semibold uppercase text-muted-foreground">{title}</p>}<div className="space-y-1">{children}</div></div>;
 }
 
-function NavItem({ icon: Icon, label, open, active = false, to }: { icon: typeof History; label: string; open: boolean; active?: boolean; to?: "/search" | "/write" | "/analyze" | "/analysis" }) {
+function NavItem({ icon: Icon, label, open, active = false, to }: { icon: typeof History; label: string; open: boolean; active?: boolean; to?: "/search" | "/write" | "/analyze" | "/analysis" | "/converter" }) {
   const className = cn("flex h-10 w-full items-center rounded-full text-sm transition-colors", open ? "gap-3 px-3" : "justify-center", active ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground" : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground");
   const inner = (
     <>

@@ -56,6 +56,7 @@ import {
   writingPresets,
   type EngineMode,
 } from "@/lib/engine";
+import { blocksToSlides, exportPptx, exportReportPdf } from "@/lib/export-engine";
 import { exportBibtex, exportDocx, exportPdf, exportRis, readBlocks } from "@/lib/exporters";
 import { renderMathToHtml } from "@/lib/latex";
 import {
@@ -418,12 +419,12 @@ function WritingWorkspace() {
 
   /* ------------------------------- export ------------------------------- */
 
-  const doExport = async (kind: "docx" | "pdf" | "bibtex" | "ris") => {
+  const doExport = async (kind: "docx" | "pdf" | "report" | "pptx" | "bibtex" | "ris") => {
     const editor = editorRef.current;
     if (!editor) return;
     const blocks = readBlocks(editor);
     const title = documentTitle();
-    if ((kind === "docx" || kind === "pdf") && blocks.length === 0) {
+    if (kind !== "bibtex" && kind !== "ris" && blocks.length === 0) {
       setError("Write something in the manuscript before exporting.");
       return;
     }
@@ -432,10 +433,16 @@ function WritingWorkspace() {
       return;
     }
     setError(null);
-    if (kind === "docx") await exportDocx(title, blocks, bibliography, style);
-    if (kind === "pdf") exportPdf(title, blocks, bibliography, style);
-    if (kind === "bibtex") exportBibtex(title, bibliography);
-    if (kind === "ris") exportRis(title, bibliography);
+    try {
+      if (kind === "docx") await exportDocx(title, blocks, bibliography, style);
+      if (kind === "pdf") exportPdf(title, blocks, bibliography, style);
+      if (kind === "report") exportReportPdf(title, blocks, bibliography, style);
+      if (kind === "pptx") await exportPptx(title, blocksToSlides(title, blocks));
+      if (kind === "bibtex") exportBibtex(title, bibliography);
+      if (kind === "ris") exportRis(title, bibliography);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Export failed.");
+    }
   };
 
   /* -------------------------------- panels ------------------------------ */
@@ -720,6 +727,12 @@ function WritingWorkspace() {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => void doExport("docx")}>Word (.docx)</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => void doExport("pdf")}>PDF</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => void doExport("report")}>
+                  Publication-ready PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => void doExport("pptx")}>
+                  PowerPoint (.pptx)
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => void doExport("bibtex")}>References (BibTeX)</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => void doExport("ris")}>References (RIS)</DropdownMenuItem>
               </DropdownMenuContent>

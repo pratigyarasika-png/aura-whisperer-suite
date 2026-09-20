@@ -16,7 +16,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChartsPanel } from "@/components/analysis/ChartsPanel";
 import { CodeEditor } from "@/components/analysis/CodeEditor";
 import { DataGridPanel } from "@/components/analysis/DataGridPanel";
+import { ProjectHistory } from "@/components/analysis/ProjectHistory";
+import { SyncBadge } from "@/components/SyncBadge";
 import { Button } from "@/components/ui/button";
+import { newProjectId, type AnalysisProject } from "@/lib/projects";
 import {
   datasetFromMatrix,
   datasetSummaryForAi,
@@ -113,6 +116,33 @@ function AnalysisWorkspace() {
   const [pdfText, setPdfText] = useState<{ name: string; text: string; figures: string[] } | null>(null);
   const [over, setOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
+
+  const buildSnapshot = useCallback(
+    (): Omit<AnalysisProject, "createdAt" | "updatedAt"> => ({
+      id: projectId ?? newProjectId(),
+      name: session.datasets[0]?.name ?? "Analysis project",
+      datasets: session.datasets,
+      activeId: session.activeId,
+      code: session.code,
+      narrative: session.narrative,
+      tab: session.tab,
+    }),
+    [projectId, session],
+  );
+
+  const openSaved = useCallback((project: AnalysisProject) => {
+    setProjectId(project.id);
+    setSession({
+      datasets: project.datasets ?? [],
+      activeId: project.activeId ?? null,
+      code: project.code || EMPTY.code,
+      narrative: project.narrative ?? "",
+      tab: (["data", "code", "charts", "insights"] as Tab[]).includes(project.tab as Tab)
+        ? (project.tab as Tab)
+        : "data",
+    });
+  }, []);
 
   useEffect(() => {
     setSession(loadSession());
@@ -283,7 +313,8 @@ function AnalysisWorkspace() {
               {active ? `${active.name} · ${active.rows.length.toLocaleString()} rows` : "No dataset loaded yet"}
             </p>
           </div>
-          <nav className="ml-auto flex flex-wrap gap-1" aria-label="Workspace sections">
+          <SyncBadge className="ml-auto" />
+          <nav className="flex flex-wrap gap-1" aria-label="Workspace sections">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -439,6 +470,8 @@ function AnalysisWorkspace() {
                 )}
               </div>
             </div>
+
+            <ProjectHistory buildSnapshot={buildSnapshot} onOpen={openSaved} />
 
             {active ? (
               <DataGridPanel

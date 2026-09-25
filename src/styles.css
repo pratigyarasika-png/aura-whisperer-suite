@@ -279,6 +279,8 @@
 .quick-action { transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease; }
 .quick-action:hover { transform: translateY(-2px); }
 .quick-action:active { transform: scale(0.99); }
+.tool-category { border-radius: var(--radius); }
+.tool-category button { min-height: 3.25rem; }
 button, a { -webkit-tap-highlight-color: transparent; }
 .rise-in { animation: rise-in 260ms ease both; }
 

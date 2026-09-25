@@ -8,16 +8,21 @@ import {
   BookMarked,
   BookOpenText,
   BrainCircuit,
+  Calculator,
   Check,
   ChevronLeft,
   ChevronRight,
   CircleUserRound,
   FileSearch,
+  FileText,
   FolderKanban,
   Gauge,
   GraduationCap,
   History,
+  ImagePlus,
+  LayoutTemplate,
   Library,
+  LineChart,
   Menu,
   MessageSquareText,
   Moon,
@@ -26,13 +31,18 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   PenLine,
+  PenTool,
+  Presentation,
 
   Plus,
   Quote,
+  RefreshCw,
   Search,
   Send,
   Sparkles,
   Square,
+  TableProperties,
+  TrendingUp,
   Sun,
   WandSparkles,
   X,
@@ -69,6 +79,7 @@ export const Route = createFileRoute("/")({
 type Theme = "light" | "dark";
 type EngineMode = "flash" | "pro" | "expert" | "deep" | "journal";
 type AskMode = "general" | "academic";
+type WorkspaceRoute = "/search" | "/write" | "/analyze" | "/analysis" | "/converter";
 
 const ASK_MODE_KEY = "orbis-ask-mode";
 
@@ -150,13 +161,58 @@ const hubActions: Array<{
   helper: string;
   icon: typeof FileSearch;
   position: string;
-  to?: "/search" | "/write" | "/analyze" | "/analysis" | "/converter";
+  to?: WorkspaceRoute;
   withQuery?: boolean;
 }> = [
   { label: "Find papers", helper: "Search literature", icon: FileSearch, position: "hub-action-top", to: "/search", withQuery: true },
   { label: "Map concepts", helper: "Connect findings", icon: Network, position: "hub-action-right", to: "/analyze" },
   { label: "Cite sources", helper: "Build references", icon: Quote, position: "hub-action-bottom", to: "/write" },
   { label: "Analyze PDF", helper: "Ask documents", icon: BookOpenText, position: "hub-action-left" },
+];
+
+type ToolContext = {
+  label: string;
+  detail: string;
+  icon: typeof Search;
+  to: WorkspaceRoute;
+};
+
+const toolGroups: Array<{ title: string; tools: ToolContext[] }> = [
+  {
+    title: "Discover",
+    tools: [
+      { label: "Literature radar", detail: "Find trusted papers", icon: Search, to: "/search" },
+      { label: "Evidence trails", detail: "Connect key findings", icon: Network, to: "/analyze" },
+      { label: "Source vault", detail: "Organize references", icon: Library, to: "/write" },
+    ],
+  },
+  {
+    title: "Compose",
+    tools: [
+      { label: "Manuscript desk", detail: "Draft structured papers", icon: PenTool, to: "/write" },
+      { label: "Report writer", detail: "Shape clear reports", icon: FileText, to: "/write" },
+      { label: "Citation forge", detail: "Format references", icon: Quote, to: "/write" },
+      { label: "Research poster", detail: "Build visual posters", icon: LayoutTemplate, to: "/write" },
+    ],
+  },
+  {
+    title: "Data",
+    tools: [
+      { label: "Statistical lab", detail: "Test and compare", icon: BarChart3, to: "/analyze" },
+      { label: "Data workbench", detail: "Explore with code", icon: Database, to: "/analysis" },
+      { label: "Chart studio", detail: "Create clear figures", icon: LineChart, to: "/analysis" },
+      { label: "Data cleaner", detail: "Prepare messy tables", icon: TableProperties, to: "/analysis" },
+    ],
+  },
+  {
+    title: "Create & export",
+    tools: [
+      { label: "Equation studio", detail: "Solve and format math", icon: Calculator, to: "/write" },
+      { label: "Visual figure lab", detail: "Generate article art", icon: ImagePlus, to: "/write" },
+      { label: "Presentation deck", detail: "Build editable slides", icon: Presentation, to: "/write" },
+      { label: "Export workshop", detail: "Convert and download", icon: RefreshCw, to: "/converter" },
+    ],
+  },
 ];
 
 
@@ -179,7 +235,9 @@ function ResearchWorkspace() {
   const [answer, setAnswer] = useState("");
   const [answering, setAnswering] = useState(false);
   const [answerError, setAnswerError] = useState<string | null>(null);
+  const [activeTool, setActiveTool] = useState<ToolContext | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const queryRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("orbis-theme");
@@ -539,10 +597,10 @@ function ResearchWorkspace() {
         <main className="workspace-grid min-h-[calc(100vh-7.5rem)] overflow-hidden px-4 py-8 sm:px-8 sm:py-10 lg:px-12">
           <section className="mx-auto flex w-full max-w-6xl flex-col items-center">
             <div className="mb-7 text-center sm:mb-10">
-              <p className="mb-3 text-xs font-semibold uppercase text-primary-ink">AI research orbit</p>
+              <p className="mb-3 text-xs font-semibold uppercase text-primary-ink">Orbis research canvas</p>
               <h2 className="font-display text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">What are you investigating?</h2>
               <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-                Start with a question, paper, or concept. Orbis will trace the evidence around it.
+                Start with a question, paper, or concept. Orbis will map the evidence around it.
               </p>
             </div>
 
@@ -596,12 +654,23 @@ function ResearchWorkspace() {
                   event.preventDefault();
                   const prompt = query.trim();
                   if (!prompt) return;
-                  if (askMode === "academic") navigate({ to: "/search", search: { q: prompt } });
-                  else void runGeneralAsk(prompt);
+                  const contextualPrompt = activeTool ? `${activeTool.label}: ${prompt}` : prompt;
+                  if (askMode === "academic") navigate({ to: "/search", search: { q: contextualPrompt } });
+                  else void runGeneralAsk(contextualPrompt);
                 }}>
                 <span className="mb-2 grid size-10 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg sm:mb-4 sm:size-12"><WandSparkles className="size-4 sm:size-5" /></span>
                 <label htmlFor="research-query" className="font-display text-sm font-semibold sm:text-lg">Ask Orbis</label>
+                {activeTool && (
+                  <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-secondary px-2 py-1 text-[9px] font-semibold text-secondary-foreground sm:text-[10px]">
+                    <activeTool.icon className="size-3 shrink-0" />
+                    <span className="truncate">{activeTool.label}</span>
+                    <Button type="button" variant="ghost" size="icon" className="size-4 rounded-full" onClick={() => setActiveTool(null)} aria-label="Clear selected tool">
+                      <X className="size-2.5" />
+                    </Button>
+                  </span>
+                )}
                 <textarea
+                  ref={queryRef}
                   id="research-query"
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
@@ -687,6 +756,56 @@ function ResearchWorkspace() {
                 );
               })}
             </div>
+
+            <section className="mt-14 w-full border-t border-border/70 pt-10 sm:mt-16" aria-labelledby="toolkit-title">
+              <div className="text-center">
+                <p className="text-[11px] font-semibold uppercase text-primary-ink">Orbis toolkit</p>
+                <h3 id="toolkit-title" className="mt-2 font-display text-2xl font-semibold sm:text-3xl">One workspace, every research move</h3>
+                <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">Choose a tool to add its context to your next question.</p>
+              </div>
+
+              <div className="mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {toolGroups.map((group) => (
+                  <article key={group.title} className="tool-category border border-border bg-card p-3.5 shadow-sm">
+                    <h4 className="px-2 py-1 text-[11px] font-bold uppercase text-muted-foreground">{group.title}</h4>
+                    <div className="mt-2 space-y-1">
+                      {group.tools.map((tool) => {
+                        const ToolIcon = tool.icon;
+                        const selected = activeTool?.label === tool.label;
+                        return (
+                          <Button
+                            key={tool.label}
+                            type="button"
+                            variant="ghost"
+                            className={cn(
+                              "group h-auto w-full justify-start whitespace-normal rounded-md p-2 text-left",
+                              selected && "bg-secondary text-secondary-foreground",
+                            )}
+                            onClick={() => {
+                              setActiveTool(tool);
+                              queryRef.current?.focus();
+                              window.setTimeout(() => queryRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+                            }}
+                            aria-pressed={selected}
+                          >
+                            <span className="grid size-9 shrink-0 place-items-center rounded-full bg-secondary text-secondary-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                              <ToolIcon className="size-4" />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block text-xs font-semibold leading-4">{tool.label}</span>
+                              <span className="block text-[10px] font-normal leading-4 text-muted-foreground">{tool.detail}</span>
+                            </span>
+                          </Button>
+                        );
+                      })}
+                    </div>
+                    <Button asChild variant="ghost" size="sm" className="mt-2 w-full justify-between rounded-md px-2 text-[11px] text-primary-ink">
+                      <Link to={group.tools[0]?.to ?? "/"}>Open {group.title.toLowerCase()} <ChevronRight /></Link>
+                    </Button>
+                  </article>
+                ))}
+              </div>
+            </section>
           </section>
         </main>
       </div>
